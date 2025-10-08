@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
 
-
-class LoginForm(FlaskForm):
+class LoginForm(FlaskForm, UserMixin):
     poketrainer_id = StringField(
         "PokéTrainer ID",
         validators=[DataRequired(), Length(min=3, max=20)],
@@ -41,8 +41,7 @@ class RegForm(FlaskForm):
 
 from mongoengine import Document, StringField, IntField
 
-class Item(Document):
-    poketrainer_id = IntField(required = True, unique = True)
+
 
 
 class Item(db.Document):
@@ -76,3 +75,31 @@ class Item(db.Document):
     @staticmethod
     def delete_all_items():
         Item.drop_collection()
+
+class User(db.Document, UserMixin):
+    meta = {'collection': 'users'}
+    poketrainer_id = db.StringField(required = True, unique = True)
+    email = db.StringField(required = True, unique = True)
+    password_hash = db.StringField(required = True)
+
+    @staticmethod
+    def get_user_by_name(name):
+        return User.objects(username = name).first()
+    
+    @staticmethod
+    def get_user_by_email(email):
+        return User.objects(email = email).first()
+    
+    @staticmethod
+    def get_user_by_id(user_id):
+        return User.objects(id = user_id).first()
+    
+    @staticmethod
+    def save_user(poketrainer_id, email, password_hash):
+        user = User(poketrainer_id = poketrainer_id, email = email, password_hash = password_hash)
+        user.save()
+        return user
+    
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_user_by_id(user_id)

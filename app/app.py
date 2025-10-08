@@ -1,5 +1,6 @@
-from flask import request, render_template, redirect, url_for
-from app.model import LoginForm, RegForm, Item
+from flask import request, render_template, redirect, url_for, flash
+from flask_login import login_user, logout_user, current_user, login_required
+from app.model import LoginForm, RegForm, Item, User
 from app import app
 
 
@@ -454,9 +455,9 @@ def shop():
             item_price=poke_mart_items[p]["item_price"],
             item_quantity=poke_mart_items[p]["item_quantity"]
         )
-    
-    items = Item.get_all_items()
     '''
+    items = Item.get_all_items()
+    
     return render_template('shop.html', poke_mart_items = poke_mart_items)
 
 @app.route('/shop/<item_id>', methods = ['GET'])
@@ -467,8 +468,15 @@ def show_items(item_id):
     return render_template('item.html', poke_mart_items = poke_mart_items, item = item_dict)
 
 @app.route('/cart', methods = ['GET', 'POST'])
+@login_required
 def handle_cart():
-    return redirect(url_for("shop"))
+    if request.method == "GET":
+        return "display cart"
+    else:
+        id = request.form["item_id"]
+        quantity = request.form["quantity"]
+        return f'id, {id}, quantity: {quantity}'
+    
 
 #login route
 @app.route('/login', methods =['GET', 'POST'])
@@ -479,8 +487,24 @@ def login():
     else:
         poketrainer_id = request.form['poketrainer_id']
         password = request.form['password']
-        return f'poketrainer_id: {poketrainer_id}, password: {password}'
-    
+        #return f'poketrainer_id: {poketrainer_id}, password: {password}'
+        #authenticate user
+        user = User.objects(poketrainer_id = poketrainer_id).first()
+        if user:
+            login_user(user)
+            flash("Login Successful", "success")
+            return redirect(url_for("shop"))
+        else:
+            flash("login unsuccessful", "danger")
+            return redirect(url_for("register"))
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out", "info")
+    return redirect(url_for("shop"))
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegForm()
@@ -490,5 +514,10 @@ def register():
         poketrainer_id = request.form['poketrainer_id']
         password = request.form['password']
         email = request.form['email']
-        return f'poketrainer_id: {poketrainer_id}, password: {password}, email: {email}'
-    
+        #return f'poketrainer_id: {poketrainer_id}, password: {password}, email: {email}'
+        if User.save_user(poketrainer_id, email, password):
+            flash("Account created", 'success')
+        else:
+            flash("Unsuccssful", "danger")
+        return redirect(url_for("login"))
+    return render_template("register.html", form = form)
