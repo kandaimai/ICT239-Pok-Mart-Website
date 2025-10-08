@@ -14,12 +14,13 @@
     <div class="col">
       <div class="card h-100 shadow-sm border-2 border-danger">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title text-danger fw-bold">{{ item.name }}</h5>
+          <h5 class="card-title text-danger fw-bold">{{ item.item_name }}</h5>
           <p class="card-text small text-muted mb-2">
-            ID: {{ item.id }}
+            ID: {{ item.item_id }}
           </p>
-          <p class="card-text flex-grow-1">{{ item.description }}</p>
-          <h6 class="fw-semibold mt-3">₱{{ item.price }}</h6>
+          <p class="card-text flex-grow-1">{{ item.item_description }}</p>
+          <p class = "fw-semibold mt-3">Quantity Left: {{ item.item_quantity }}</p>
+          <h6 class="fw-semibold mt-3">₱{{ item.item_price }}</h6>
 
           <div class="mt-3 d-flex justify-content-between">
             <!-- Details Button -->
