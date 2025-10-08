@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Poké Mart - {{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg border-3 border-danger">
+        <div class="card-header bg-danger text-white text-center fw-bold">
+          {{ item.name }}
+        </div>
+        <div class="card-body text-center">
+          <p class="text-muted small mb-2">Item ID: {{ item.id }}</p>
+          <p class="lead">{{ item.description }}</p>
+          <h4 class="fw-bold text-danger mt-3">₱{{ item.price }}</h4>
+
+          <div class="d-flex justify-content-center mt-4 gap-3">
+            <!-- Back to Shop -->
+            <a href="/shop" class="btn btn-outline-secondary btn-sm">
+              ← Back to Shop
+            </a>
+
+            <!-- Add to Cart -->
+            <form method="POST" action="/cart/{{ item.id }}">
+              <button type="submit" class="btn btn-danger btn-sm">
+                Add to Cart
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <p class="text-muted small">
+          Looking for more items? Visit the full <a href="/shop" class="text-danger fw-bold text-decoration-none">Poké Mart</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

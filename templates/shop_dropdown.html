@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="text-center fw-bold text-danger mb-4">Welcome to the Poké Mart!</h2>
+  <p class="text-center text-muted mb-5">
+    Browse our wide selection of healing items, Poké Balls, Repels, TMs, and more for every trainer’s needs.
+  </p>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in poke_mart_items %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-2 border-danger">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-danger fw-bold">{{ item.name }}</h5>
+          <p class="card-text small text-muted mb-2">
+            ID: {{ item.id }}
+          </p>
+          <p class="card-text flex-grow-1">{{ item.description }}</p>
+          <h6 class="fw-semibold mt-3">₱{{ item.price }}</h6>
+
+          <div class="mt-3 d-flex justify-content-between">
+            <!-- Details Button -->
+            <button class="btn btn-outline-danger btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#itemModal{{ item.id }}">
+              Details
+            </button>
+
+            <!-- Add to Cart Button -->
+            <form method="POST" action="/cart">
+              <button type="submit" class="btn btn-danger btn-sm">
+                Add to Cart
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Item Details -->
+    <div class="modal fade" id="itemModal{{ item.id }}" tabindex="-1" aria-labelledby="itemModalLabel{{ item.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger border-3">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="itemModalLabel{{ item.id }}">{{ item.name }}</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>ID:</strong> {{ item.id }}</p>
+            <p><strong>Description:</strong> {{ item.description }}</p>
+            <p><strong>Price:</strong> ₱{{ item.price }}</p>
+          </div>
+          <div class="modal-footer">
+            <form method="POST" action="/cart">
+              <button type="submit" class="btn btn-danger">Add to Cart</button>
+            </form>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
